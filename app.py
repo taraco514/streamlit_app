@@ -126,3 +126,40 @@ st.markdown("""
 - 地方県では高齢化率が高く、都市部では比較的低い傾向が見られる  
 - これは若年層の都市部への人口集中が一因と考えられる  
 """)
+
+tab1, tab2, tab3 = st.tabs(
+    ["📊 可視化", "📋 データ確認", "📝 解釈・考察"]
+)
+
+with tab1:
+    st.subheader("高齢化率の可視化")
+
+    fig, ax = plt.subplots()
+    # （ここに既存のグラフ描画コード）
+    st.pyplot(fig)
+
+with tab2:
+    st.subheader("データ確認")
+
+    st.dataframe(
+        result.head(20),
+        use_container_width=True
+    )
+
+    st.caption("※ 単位：人口（人）、高齢化率（％）")
+
+with tab3:
+    st.subheader("解釈・考察")
+
+    with st.expander("グラフから読み取れること"):
+        st.markdown("""
+        - すべての都道府県で高齢化率は年々上昇している  
+        - 地方県ほど高齢化率が高い傾向がある  
+        - 都市部では上昇しているが地方より低い水準にある  
+        """)
+
+    with st.expander("補足・注意点"):
+        st.markdown("""
+        - 高齢化率は「65歳以上人口 ÷ 総人口 × 100」で算出している  
+        - 国勢調査は5年ごとの調査であるため、年次は連続していない  
+        """)
