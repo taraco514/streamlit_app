@@ -2,32 +2,24 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# =====================
-# タイトル・概要
-# =====================
-st.set_page_config(page_title="都道府県別 高齢化率", layout="wide")
 
-st.title("都道府県別 高齢化率の可視化")
-st.write("e-Stat 国勢調査データを用いて高齢化の推移と地域差を可視化します。")
+st.set_page_config(page_title="都道府県別高齢化率", layout="wide")
+
+st.title("都道府県別高齢化率の可視化")
+st.write("e-Stat 国勢調査のデータを用いて高齢化の推移と地域差を可視化する。")
 st.caption("出典：e-Stat（政府統計）")
 
-# =====================
-# データ読み込み
-# =====================
-df = pd.read_csv("data.csv")
+
+df = pd.read.csv("data.csv")
 
 st.header("データの確認")
 st.dataframe(df.head())
 
-
 with st.sidebar:
-    prefectures = st.multiselect(
-        "都道府県を選択してください（複数選択可）",
-        df["地域"].unique()
-    )
+    prefectures = st.multiselect("都道府県を選択してください（複数回答可）", df["地域"].unique())
 
     year = st.number_input(
-        "年を指定してください",
+        "年を選択してください",
         min_value=int(df["時間軸（年）"].min()),
         max_value=int(df["時間軸（年）"].max()),
         value=int(df["時間軸（年）"].min()),
