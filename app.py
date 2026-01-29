@@ -12,6 +12,28 @@ st.caption("出典：e-Stat（政府統計）")
 
 df = pd.read.csv("data.csv")
 
+elderly_df = df[df["年齢"].str.contains("65")]
+elderly_sum = (
+    elderly_df
+    .groupby(["地域", "時間軸（年）"])["人口"]
+    .sum()
+    .reset_index()
+    .rename(columns={"人口": "65歳以上人口"})
+)
+total_df = df[df["年齢"] == "総数"]
+total_pop = total_df[["地域", "時間軸（年）", "人口"]]
+total_pop = total_pop.rename(columns={"人口": "総人口"})
+
+merged_df = pd.merge(
+    total_pop,
+    elderly_sum,
+    on=["地域", "時間軸（年）"]
+)
+merged_df["高齢化率"] = (
+    merged_df["65歳以上人口"] / merged_df["総人口"] * 100
+)
+
+
 st.header("データの確認")
 st.dataframe(df.head())
 
