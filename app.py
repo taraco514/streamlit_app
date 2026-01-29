@@ -10,7 +10,7 @@ st.write("e-Stat 国勢調査のデータを用いて高齢化の推移と地域
 st.caption("出典：e-Stat（政府統計）")
 
 
-df = pd.read.csv("data.csv")
+raw_df = pd.read.csv("data.csv")
 
 elderly_df = df[df["年齢"].str.contains("65")]
 elderly_sum = (
@@ -32,6 +32,8 @@ merged_df = pd.merge(
 merged_df["高齢化率"] = (
     merged_df["65歳以上人口"] / merged_df["総人口"] * 100
 )
+
+df = merged_df
 
 
 st.header("データの確認")
