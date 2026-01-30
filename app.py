@@ -11,32 +11,36 @@ st.caption("出典：e-Stat（政府統計）")
 
 
 raw_df = pd.read_csv("c03.csv", encoding="cp932")
-st.write(raw_df.columns)
 
 
-elderly_df = raw_df[raw_df["年齢"].str.contains("65")]
+elderly_df = raw_df[raw_df["年齢5歳階級"].str.contains("65|70|75|80|85")]
 elderly_sum = (
     elderly_df
-    .groupby(["地域", "時間軸（年）"])["人口"]
+    .groupby(["都道府県名", "西暦（年）"])["人口（総数）"]
     .sum()
     .reset_index()
-    .rename(columns={"人口": "65歳以上人口"})
+    .rename(columns={"人口（総数）": "65歳以上人口"})
 )
-total_df = raw_df[raw_df["年齢"] == "総数"]
-total_pop = total_df[["地域", "時間軸（年）", "人口"]]
-total_pop = total_pop.rename(columns={"人口": "総人口"})
+total_pop = (
+    raw_df
+    .groupby(["都道府県名", "西暦（年）"])["人口（総数）"]
+    .sum()
+    .reset_index()
+    .rename(colimns={"人口（総数）": "総人口"})
+)
 
-df = pd.merge(
+merge_df = pd.merge(
     total_pop,
     elderly_sum,
     on=["地域", "時間軸（年）"]
 )
-df["高齢化率"] = df["65歳以上人口"] / df["総人口"] * 100
+merge_df["高齢化率"] = (merge_df["65歳以上人口"] / merge_df["総人口"] * 100)
+df = merge_df
 
 with st.sidebar:
 
     st.header("表示条件")
-    prefectures = st.multiselect("都道府県を選択してください（複数回答可）", df["地域"].unique())
+    prefectures = st.multiselect("都道府県を選択してください", df["都道府県名"].unique())
     year = st.number_input(
         "年を選択してください",
         min_value=int(df["時間軸（年）"].min()),
@@ -51,8 +55,8 @@ with st.sidebar:
     )
 
 filtered_df = df[
-    (df["地域"].isin(prefectures)) &
-    (df["時間軸（年）"] == year)
+    (df["都道府県名"].isin(prefectures)) &
+    (df["西暦（年）"] == year)
 ]
 
 st.write("単位：人口（人）、高齢化率（％）")
