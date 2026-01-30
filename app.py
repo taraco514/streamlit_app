@@ -10,7 +10,7 @@ st.write("e-Stat 国勢調査のデータを用いて高齢化の推移と地域
 st.caption("出典：e-Stat（政府統計）")
 
 
-raw_df = pd.read.csv("data.csv")
+raw_df = pd.read_csv("c03.csv")
 
 elderly_df = raw_df[raw_df["年齢"].str.contains("65")]
 elderly_sum = (
@@ -51,8 +51,8 @@ with st.sidebar:
     )
 
     option = st.radio(
-        "表示形式を選択してください",
-        ["表", "折れ線グラフ", "棒グラフ"]
+        "グラフを選択してください",
+        ["折れ線グラフ", "棒グラフ"]
     )
 
 filtered_df = df[
@@ -84,15 +84,15 @@ elif option == "棒グラフ":
     plt.xticks(rotation=90)
     st.pyplot(fig)
 
-tab1, tab2, tab3 = st.tabs(["可視化", "データ確認", "解釈・補足"])
+tab1, tab2, tab3 = st.tabs(["可視化", "データ確認", "補足"])
 
 with tab1:
     st.subheader("高齢化率の可視化")
-    avg_rate = filtered_df[filtered_df["時間軸（年）"] == year]["高齢化率"].mean()
-    st.metric("選択年の平均高齢化率（％）", f"{avg_rate:.1f}")
+    avg_rate = filtered_df["高齢化率"].mean()
+    st.metric("選択年の平均高齢化率（％）", f"{avg_rate:.1f} %")
     fig, ax = plt.subplots()
 
-    if graph_type == "折れ線グラフ":
+    if option == "折れ線グラフ":
         for pref in prefectures:
             temp = df[df["地域"] == pref]
             ax.plot(temp["時間軸（年）"], temp["高齢化率"], label=pref)
@@ -100,8 +100,7 @@ with tab1:
         ax.set_ylabel("高齢化率（％）")
         ax.legend()
     else:
-        plot_df = filtered_df[filtered_df["時間軸（年）"] == year]
-        ax.bar(plot_df["地域"], plot_df["高齢化率"])
+        ax.bar(filtered_df["地域"], filtered_df["高齢化率"])
         ax.set_xlabel("都道府県")
         ax.set_ylabel("高齢化率（％）")
         plt.xticks(rotation=90)
@@ -109,11 +108,11 @@ with tab1:
 
 with tab2:
     st.subheader("データ確認")
-    st.dataframe(df.head(20), use_container_width=True)
+    st.dataframe(filtered_df, use_container_width=True)
     st.caption("単位：人口（人）、高齢化率（％）")
 
 with tab3:
-    st.subheader("解釈・補足説明")
+    st.subheader("補足")
 
     with st.expander("高齢化率とは"):
         st.write("高齢化率は「65歳以上人口÷総人口×100」で計算される値である。")
