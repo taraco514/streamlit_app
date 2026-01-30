@@ -11,6 +11,8 @@ st.caption("出典：e-Stat（政府統計）")
 
 
 raw_df = pd.read_csv("c03.csv", encoding="cp932")
+st.write(raw_df.columns)
+
 
 elderly_df = raw_df[raw_df["年齢"].str.contains("65")]
 elderly_sum = (
