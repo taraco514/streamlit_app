@@ -13,7 +13,12 @@ st.caption("出典：e-Stat（政府統計）")
 raw_df = pd.read_csv("c03.csv", encoding="cp932")
 
 
-elderly_df = raw_df[raw_df["年齢5歳階級"].str.contains("65|70|75|80|85")]
+elderly_df = raw_df[
+    raw_df["年齢5歳階級"]
+    .fillna("")
+    .astype(str)
+    .str.contains("65|70|75|80|85")]
+
 elderly_sum = (
     elderly_df
     .groupby(["都道府県名", "西暦（年）"])["人口（総数）"]
