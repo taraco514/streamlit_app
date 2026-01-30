@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import japanize_matplotlib
 
 
 st.set_page_config(page_title="都道府県別高齢化率", layout="wide")
@@ -31,13 +32,13 @@ total_pop = (
     .groupby(["都道府県名", "西暦（年）"])["人口（総数）"]
     .sum()
     .reset_index()
-    .rename(colimns={"人口（総数）": "総人口"})
+    .rename(columns={"人口（総数）": "総人口"})
 )
 
 merge_df = pd.merge(
     total_pop,
     elderly_sum,
-    on=["地域", "時間軸（年）"]
+    on=["都道府県名", "西暦（年）"]
 )
 merge_df["高齢化率"] = (merge_df["65歳以上人口"] / merge_df["総人口"] * 100)
 df = merge_df
@@ -48,9 +49,9 @@ with st.sidebar:
     prefectures = st.multiselect("都道府県を選択してください", df["都道府県名"].unique())
     year = st.number_input(
         "年を選択してください",
-        min_value=int(df["時間軸（年）"].min()),
-        max_value=int(df["時間軸（年）"].max()),
-        value=int(df["時間軸（年）"].min()),
+        min_value=int(df["西暦（年）"].min()),
+        max_value=int(df["西暦（年）"].max()),
+        value=int(df["西暦（年）"].min()),
         step=5
     )
 
@@ -69,8 +70,8 @@ st.write("単位：人口（人）、高齢化率（％）")
 if option == "折れ線グラフ":
     fig, ax = plt.subplots()
     for pref in prefectures:
-        temp = df[df["地域"] == pref]
-        ax.plot(temp["時間軸（年）"], temp["高齢化率"], label=pref)
+        temp = df[df["都道府県名"] == pref]
+        ax.plot(temp["西暦（年）"], temp["高齢化率"], label=pref)
 
     ax.set_xlabel("年")
     ax.set_ylabel("高齢化率（％）")
@@ -79,7 +80,7 @@ if option == "折れ線グラフ":
 
 elif option == "棒グラフ":
     fig, ax = plt.subplots()
-    ax.bar(filtered_df["地域"], filtered_df["高齢化率"])
+    ax.bar(filtered_df["都道府県名"], filtered_df["高齢化率"])
     ax.set_ylabel("高齢化率（％）")
     ax.set_xlabel("都道府県")
     plt.xticks(rotation=90)
@@ -95,13 +96,13 @@ with tab1:
 
     if option == "折れ線グラフ":
         for pref in prefectures:
-            temp = df[df["地域"] == pref]
-            ax.plot(temp["時間軸（年）"], temp["高齢化率"], label=pref)
+            temp = df[df["都道府県名"] == pref]
+            ax.plot(temp["西暦（年）"], temp["高齢化率"], label=pref)
         ax.set_xlabel("年")
         ax.set_ylabel("高齢化率（％）")
         ax.legend()
     else:
-        ax.bar(filtered_df["地域"], filtered_df["高齢化率"])
+        ax.bar(filtered_df["都道府県名"], filtered_df["高齢化率"])
         ax.set_xlabel("都道府県")
         ax.set_ylabel("高齢化率（％）")
         plt.xticks(rotation=90)
