@@ -10,7 +10,7 @@ st.write("e-Stat 国勢調査のデータを用いて高齢化の推移と地域
 st.caption("出典：e-Stat（政府統計）")
 
 
-raw_df = pd.read_csv("c03.csv")
+raw_df = pd.read_csv("c03.csv", encoding="cp932")
 
 elderly_df = raw_df[raw_df["年齢"].str.contains("65")]
 elderly_sum = (
@@ -24,24 +24,17 @@ total_df = raw_df[raw_df["年齢"] == "総数"]
 total_pop = total_df[["地域", "時間軸（年）", "人口"]]
 total_pop = total_pop.rename(columns={"人口": "総人口"})
 
-merged_df = pd.merge(
+df = pd.merge(
     total_pop,
     elderly_sum,
     on=["地域", "時間軸（年）"]
 )
-merged_df["高齢化率"] = (
-    merged_df["65歳以上人口"] / merged_df["総人口"] * 100
-)
-
-df = merged_df
-
-
-st.header("データの確認")
-st.dataframe(df.head())
+df["高齢化率"] = df["65歳以上人口"] / df["総人口"] * 100
 
 with st.sidebar:
-    prefectures = st.multiselect("都道府県を選択してください（複数回答可）", df["地域"].unique())
 
+    st.header("表示条件")
+    prefectures = st.multiselect("都道府県を選択してください（複数回答可）", df["地域"].unique())
     year = st.number_input(
         "年を選択してください",
         min_value=int(df["時間軸（年）"].min()),
@@ -62,10 +55,7 @@ filtered_df = df[
 
 st.write("単位：人口（人）、高齢化率（％）")
 
-if option == "表":
-    st.dataframe(filtered_df, width=800, height=300)
-
-elif option == "折れ線グラフ":
+if option == "折れ線グラフ":
     fig, ax = plt.subplots()
     for pref in prefectures:
         temp = df[df["地域"] == pref]
