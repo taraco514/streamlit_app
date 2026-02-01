@@ -8,3 +8,4 @@ plotly==5.20.0
 streamlit==1.32.2
 statsmodels==0.14.1
 scipy==1.15.3
+japanize-matplotlib
