@@ -99,7 +99,7 @@ with tab1:
     ax2.set_xlabel("高齢化率（％）")
     ax2.set_ylabel("都道府県")
     ax2.legend()
-    ax2.pyplot(fig2)
+    st.pyplot(fig2)
 
 with tab2:
     st.subheader("データ確認")
