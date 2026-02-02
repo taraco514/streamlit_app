@@ -67,25 +67,6 @@ filtered_df = df[
 
 st.write("単位：人口（人）、高齢化率（％）")
 
-if option == "折れ線グラフ":
-    fig, ax = plt.subplots()
-    for pref in prefectures:
-        temp = df[df["都道府県名"] == pref]
-        ax.plot(temp["西暦（年）"], temp["高齢化率"], label=pref)
-
-    ax.set_xlabel("年")
-    ax.set_ylabel("高齢化率（％）")
-    ax.legend()
-    st.pyplot(fig)
-
-elif option == "棒グラフ":
-    fig, ax = plt.subplots()
-    ax.bar(filtered_df["都道府県名"], filtered_df["高齢化率"])
-    ax.set_ylabel("高齢化率（％）")
-    ax.set_xlabel("都道府県")
-    plt.xticks(rotation=90)
-    st.pyplot(fig)
-
 tab1, tab2, tab3 = st.tabs(["可視化", "データ確認", "補足"])
 
 with tab1:
@@ -107,6 +88,18 @@ with tab1:
         ax.set_ylabel("高齢化率（％）")
         plt.xticks(rotation=90)
     st.pyplot(fig)
+
+    st.markdown("平均との比較")
+    fig2, ax2 = plt.subplots()
+    rank_df = filtered_df.sort_values("高齢化率")
+    
+    ax2.barh(rank_df["都道府県名"], rank_df["高齢化率"])
+    ax2.axvline(avg_rate, linestyle="--", label="平均")
+    
+    ax2.set_xlabel("高齢化率（％）")
+    ax2.set_ylabel("都道府県")
+    ax2.legend()
+    ax2.pyplot(fig2)
 
 with tab2:
     st.subheader("データ確認")
